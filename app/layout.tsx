@@ -4,6 +4,7 @@ import { AuthProvider } from "@/context/authprovider";
 import { Wendy_One } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import Signout from "@/components/signout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,8 +46,8 @@ export default function RootLayout({
             },
           }}
         />
-        <AuthProvider>{children}</AuthProvider>
-
+        <AuthProvider>{children}
+        </AuthProvider>
       </body>
     </html>
   );

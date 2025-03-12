@@ -18,4 +18,4 @@ googleProvider.setCustomParameters(
         hd: "iiitkottayam.ac.in"
     }
 );
-export {auth, googleProvider};
+export {app, auth, googleProvider};

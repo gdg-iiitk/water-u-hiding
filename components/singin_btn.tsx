@@ -4,6 +4,7 @@ import { signInWithPopup } from "firebase/auth";
 import logo from '@/statics/google-logo.svg'
 import Image from "next/image";
 import {useAuth} from "@/context/authprovider";
+import {redirect} from "next/navigation";
 export default function Signin() {
     const {user, setUser} = useAuth();
     const signin = async () => {
@@ -11,6 +12,7 @@ export default function Signin() {
             const result = await signInWithPopup(auth, googleProvider);
             console.log(result);
             setUser(result.user);
+            redirect('/');
         } catch (error) {
             console.error(error);
             throw error;

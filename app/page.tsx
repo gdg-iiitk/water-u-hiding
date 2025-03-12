@@ -25,13 +25,18 @@ export default function Home() {
       setSignInDisabled(true);
       const result = await signInWithPopup(auth, googleProvider);
       setUser(result?.user);
-      toast.success(`Signing in`);
-      setTimeout(() => {
+      const token = await result?.user?.getIdToken();
+      const res = await fetch("/api/signin", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      if (res.status === 200) {
+        toast.success(`Signing in`);
         router.replace("/forum");
-      }, 2000);
+      }
 
-      // submit question.
-      
     } catch (error) {
       console.error(error);
       // throw error;
