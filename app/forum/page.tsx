@@ -129,7 +129,7 @@ const dummyData = [
 const page = () => {
 
     const [openModal, setOpenModal] = useState(false);
-    const [vote, setVote] = useState({});
+    const [vote, setVote] = useState<any>({});
     const [pendingVote, setPendingVote] = useState({});
     const [voteCounts, setVoteCounts] = useState(
         () => Object.fromEntries(dummyData.map((q) => [q.id, q.totalVotes])) // Initial vote counts
@@ -181,9 +181,9 @@ const page = () => {
         );
     }
 
-    const toggleVote = (id) => {
+    const toggleVote = (id: string) => {
         console.log("started Toggle Vote");
-        setVote((prev) => {
+        setVote((prev:any) => {
             const newState = {...prev, [id]: !prev[id]};
             return newState;
         });
@@ -261,7 +261,7 @@ const page = () => {
                                                     : "text-white"
                                             }`}
                                             onClick={() => {
-                                                toggleVote(question.id);
+                                                toggleVote(String(question.id));
                                             }}
                                         >
                                             <ThumbsUp

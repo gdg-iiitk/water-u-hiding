@@ -16,7 +16,7 @@ export async function GET(req: Request) {
         const userRef = db.collection("question");
         const userSnap = await userRef.get();
         console.log(userSnap.docs);
-        return NextResponse.json({msg: 'ok', questions: userSnap.docs.map(doc => doc?._fieldsProto)}, {status: 200})
+        return NextResponse.json({msg: 'ok', questions: userSnap.docs.map(doc => doc.data())}, {status: 200})
 
       }
     }
