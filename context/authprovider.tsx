@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
 import { User, onAuthStateChanged } from "firebase/auth";
+import {redirect} from "next/navigation";
 
 interface AuthContextType {
     user: User | null,
@@ -14,7 +15,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode })=> {
     const [user, setUser] = useState<User | null>(null);
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            if (!currentUser) {
+                redirect('/');
+            }
             setUser(currentUser);
+
         });
         return () => unsubscribe();
     }, []);

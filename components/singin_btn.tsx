@@ -18,10 +18,16 @@ export default function Signin() {
     };
     return (
         <>
-        <button className={`flex flex-row p-3 gap-2  border border-[#C1D5F6] bg-[#F2F2F2] rounded-4xl`} onClick={signin}>
-            <Image src={logo} alt={'logo'}/>
-            <p className={`font-semibold`}>Sign in with Google</p>
-        </button>
+        {/*<button className={`flex flex-row p-3 gap-2  border border-[#C1D5F6] bg-[#F2F2F2] rounded-4xl`} onClick={signin}>*/}
+        {/*    <Image src={logo} alt={'logo'}/>*/}
+        {/*    <p className={`font-semibold`}>Sign in with Google</p>*/}
+        {/*</button>*/}
+            <button
+                onClick={signin}
+                className="px-6 py-4 bg-primary text-white  hover:bg-primary-dark transition hover:cursor-pointer text-3xl rounded-lg"
+            >
+                Login
+            </button>
         </>
     );
 }

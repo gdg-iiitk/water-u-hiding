@@ -3,7 +3,7 @@ import { authAdmin } from "@/lib/firebase_admin";
 
 export async function GET(req: Request) {
   const token = req.headers.get("Authorization")?.split("Bearer ")[1];
-
+  // console.log(req.cookies.auth_key);
   if (!token) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

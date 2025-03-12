@@ -1,6 +1,7 @@
 "use client";
 import { ArrowBigUpDash, ThumbsUp, ThumbsUpIcon } from "lucide-react";
 import React, { useState } from "react";
+import Signout from "@/components/signout";
 
 const dummyData = [
   {
@@ -111,6 +112,7 @@ const Modal = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
   };
   return (
     <div
