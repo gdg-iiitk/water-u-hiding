@@ -19,7 +19,6 @@ const FollowLine = () => {
   return (
     <div
       style={{
-        position: "fixed ",
         top: 0,
         left: 0,
         width: "100%",
@@ -27,7 +26,7 @@ const FollowLine = () => {
         backgroundColor: "black",
         zIndex: 9999,
       }}
-      className="z-50"
+      className="z-50 fixed"
     >
       <div
         style={{
