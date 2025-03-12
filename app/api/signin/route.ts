@@ -19,6 +19,9 @@ export async function POST(req: NextRequest) {
                 if (userSnap.empty) {
                     await db.collection("users").add({
                         uid: status?.uid,
+                        email: status?.email,
+                        displayName: status?.name,
+                        loggedInAt: new Date().toISOString(),
                         upVotedQuestions: []
                     })
                 }
