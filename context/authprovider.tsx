@@ -12,6 +12,10 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType|undefined>(undefined);
 
 const AuthProvider = ({ children }: { children: React.ReactNode })=> {
+    const setToken = async (user:any) => {
+        const token = await user?.getIdToken();
+        localStorage.setItem("token", token);
+    }
     const [user, setUser] = useState<User | null>(null);
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -19,7 +23,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode })=> {
                 redirect('/');
             }
             setUser(currentUser);
-
+            setToken(currentUser).then(r => {});
         });
         return () => unsubscribe();
     }, []);

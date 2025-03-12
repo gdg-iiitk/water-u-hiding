@@ -15,7 +15,6 @@ import {Filter} from "bad-words";
 import {clear} from "console";
 import FollowLine from "@/components/FollowLine";
 import toast from "react-hot-toast";
-import Signout from "@/components/signout";
 
 interface Question {
     id: string;
@@ -36,7 +35,7 @@ const page = () => {
     const [voteCounts, setVoteCounts] = useState(
         () => Object.fromEntries(questions.map((q) => [q.id, q.totalVotes])) // Initial vote counts
     );
-    const {user, setUser} = useAuth();
+    const {user} = useAuth();
     const setBatchUpdate = useCallback(
         debounce(async (updates) => {
             try {
@@ -46,8 +45,7 @@ const page = () => {
                 //   }
                 // });
                 //
-
-                console.log("Updating these votes ", updates);
+                doUpvote(updates);
                 setPendingVote({});
             } catch (error) {
                 console.error(error);
@@ -62,16 +60,29 @@ const page = () => {
         }, 2000),
         []
     );
+    const doUpvote = async (updates:any) => {
+        console.log(user);
+        let token =  await user?.getIdToken();
+        if (!token) {
+            token = localStorage.getItem("token") ?? "";
+        }
+        const res = await fetch("/api/upvote", {
+            method: "POST",
+            body: JSON.stringify({votes: updates}),
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+        console.log("Updating these votes ", updates);
+    }
     const fetchData = async () => {
         try {
             const token =  await user?.getIdToken();
-            console.log("token", token);
             const res = await fetch("/api/getQuestions", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
             });
-
             if (res.status === 200) {
                 const data = await res.json();
                 setQuestions(data.questions);
@@ -93,7 +104,6 @@ const page = () => {
         );
     }, [questions]);
     useEffect(() => {
-
         fetchData().then(()=>{});
     }, [user]);
     if (user == null) {
@@ -132,10 +142,10 @@ const page = () => {
 
 
     return (
+        <>
         <div className="w-screen   h-screen flex items-center justify-center overflow-x-hidden">
             <div
                 className="navBar  fixed z-40  w-full bg-background border border-background-alt h-20 inset-0 flex items-center justify-between p-4">
-                <Signout/>
                 <div className="title text-3xl text-primary">Water u Hiding ?</div>
                 <div
                     onClick={() => {
@@ -165,6 +175,7 @@ const page = () => {
                                 key={question.id}
                             >
                                 <div className="main text-xl">{question.question}</div>
+
                                 <div className="bottom w-full pt-2 flex items-center justify-between">
                                     <div className="left text-neutral-600 text-md">
                                         {question.name}
@@ -212,6 +223,7 @@ const page = () => {
             {/* <div className="questionModal "></div> */}
             {openModal == true ? <Modal setOpenModal={setOpenModal}/> : <></>}
         </div>
+    </>
     );
 };
 
