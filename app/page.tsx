@@ -5,6 +5,8 @@ import { auth, googleProvider } from "@/lib/firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useState } from "react";
 import { sign } from "crypto";
+import toast from "react-hot-toast";
+
 import {
   Link,
   Loader,
@@ -19,16 +21,22 @@ export default function Home() {
   const [signInDisabled, setSignInDisabled] = useState(false);
   const router = useRouter();
   const login = async () => {
-    setSignInDisabled(true);
-    setTimeout(() => setSignInDisabled(false), 5000);
-
     try {
+      setSignInDisabled(true);
       const result = await signInWithPopup(auth, googleProvider);
       setUser(result?.user);
-      router.replace("/forum");
+      toast.success(`Signing in`);
+      setTimeout(() => {
+        router.replace("/forum");
+      }, 2000);
+
+      // submit question.
+      
     } catch (error) {
       console.error(error);
       // throw error;
+    } finally {
+      setSignInDisabled(false);
     }
   };
   return (
