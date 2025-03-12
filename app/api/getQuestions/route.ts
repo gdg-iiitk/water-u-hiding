@@ -28,7 +28,7 @@ export async function GET(req: Request) {
               totalVotes: question?.upvotes,
               question: question?.text,
             }
-          })}, {status: 200})
+          }).sort((doc_a, doc_b) =>  -doc_a.totalVotes + doc_b.totalVotes )}, {status: 200})
       }
     }
 }

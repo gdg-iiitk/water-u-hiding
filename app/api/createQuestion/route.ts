@@ -17,12 +17,13 @@ export async function POST(req: NextRequest) {
         case 403:
             return NextResponse.json({msg: "Invalid Credentials"}, {status: 403});
         default:
+
             const data = {
                 qid: v4(),
                 text: body.question,
                 createdAt: new Date().toISOString(),
                 createdBy: status?.uid,
-                displayName: status?.name,
+                displayName: status?.name.trim().replace("-IIITK", ""),
                 upvotes: 0
             };
             await db.collection("question").add(data);
