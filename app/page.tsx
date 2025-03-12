@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useAuth } from "@/context/authprovider";
 import { auth, googleProvider } from "@/lib/firebase";
 import { signInWithPopup } from "firebase/auth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { sign } from "crypto";
 import toast from "react-hot-toast";
 
@@ -14,7 +14,7 @@ import {
   LoaderCircle,
   LoaderPinwheel,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import {redirect, useRouter} from "next/navigation";
 
 export default function Home() {
   const { user, setUser } = useAuth();

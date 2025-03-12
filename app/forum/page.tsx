@@ -31,7 +31,7 @@ const page = () => {
     const [pendingVote, setPendingVote] = useState({});
     const [questions, setQuestions] = useState<Question[]>([]);
     const [questionsAsked, setQuestionsAsked] = useState<number>(0);
-    const [initalFetch, setInitalFetch] = useState<boolean>(true);
+    const [disableAsk, setDisableAsk] = useState<boolean>(false);
     const [voteCounts, setVoteCounts] = useState(
         () => Object.fromEntries(questions.map((q) => [q.id, q.totalVotes])) // Initial vote counts
     );
@@ -89,8 +89,6 @@ const page = () => {
             }
         } catch (error) {
             console.error(error);
-        } finally {
-            setInitalFetch(false);
         }
         try {
             const res = await fetch("/api/noOfQuestionsAsked", {
@@ -163,8 +161,8 @@ const page = () => {
                     <div className="title text-3xl text-primary">Water u Hiding ?</div>
                     <div
                         onClick={() => {
-                            if (questionsAsked < 2) {
-                                setOpenModal(!openModal);
+                            if (questionsAsked < 2 || disableAsk) {
+                                setOpenModal(true);
                             } else {
                                 toast.error("You have already asked 2 questions");
                             }
@@ -176,9 +174,9 @@ const page = () => {
                 </div>
                 <FollowLine/>
 
-                {questions.length != 0 && !initalFetch ? (
+                {questions.length != 0 ? (
                     <div
-                        className="questionsContainer mt-48 px-6  h-full  flex flex-col items-center justify-start gap-4 ">
+                        className="questionsContainer mt-48 px-6 min-w-sm md:min-w-md h-full  flex flex-col items-center justify-start gap-4 ">
                         {questions.map((question) => {
                             return (
                                 <div
@@ -230,26 +228,25 @@ const page = () => {
                         })}
                     </div>
                 ) : (
-                    <div className="h-screen w-full text-5xl text-primary text-center py-40 ">
-                        Ask the first question.
-                    </div>
+                    <></>
                 )}
                 <FollowLine/>
                 {/* <div className="questionModal "></div> */}
                 {openModal == true ? <Modal setOpenModal={setOpenModal} setQuestions={setQuestions}
-                                            questionsAsked={questionsAsked} setAskedQuestion={setQuestionsAsked} /> : <></>}
+                                            questionsAsked={questionsAsked} setAskedQuestion={setQuestionsAsked} setDisableAsk={setDisableAsk} /> : <></>}
             </div>
         </>
     );
 };
 
 const Modal = ({
-                   setOpenModal, setQuestions, questionsAsked, setAskedQuestion,
+                   setOpenModal, setQuestions, questionsAsked, setAskedQuestion, setDisableAsk,
                }: {
     setOpenModal: React.Dispatch<React.SetStateAction<boolean>>,
     setQuestions: React.Dispatch<React.SetStateAction<Question[]>>,
     questionsAsked: number
     setAskedQuestion: React.Dispatch<React.SetStateAction<number>>,
+    setDisableAsk: React.Dispatch<React.SetStateAction<boolean>>,
 
 }) => {
     const [question, setQuestion] = useState("");
@@ -270,6 +267,7 @@ const Modal = ({
         }
         const token = await user?.getIdToken();
         setOpenModal(false);
+        setDisableAsk(true);
         const res = await fetch("/api/createQuestion", {
             method: "POST",
             body: JSON.stringify({question: questionData}),
@@ -291,6 +289,7 @@ const Modal = ({
                 }
             ]);
             setAskedQuestion(current => current + 1);
+            setDisableAsk(false);
         }
         console.log(cleanQuestion);
     };
