@@ -22,6 +22,7 @@ export default function Home() {
   const router = useRouter();
   const login = async () => {
     try {
+      toast.success(`Signing in...`);
       setSignInDisabled(true);
       const result = await signInWithPopup(auth, googleProvider);
       setUser(result?.user);
@@ -33,7 +34,7 @@ export default function Home() {
         }
       });
       if (res.status === 200) {
-        toast.success(`Signing in`);
+        toast.success(`Logged in successfully.`);
         router.replace("/forum");
       }
 
