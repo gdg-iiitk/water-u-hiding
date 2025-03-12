@@ -172,7 +172,6 @@ const page = () => {
                         <div className="text-xl">Ask</div>
                     </div>
                 </div>
-                <FollowLine/>
 
                 {questions.length != 0 ? (
                     <div
