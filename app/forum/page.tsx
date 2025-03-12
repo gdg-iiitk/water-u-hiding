@@ -32,6 +32,11 @@ const page = () => {
     const [vote, setVote] = useState<any>({});
     const [pendingVote, setPendingVote] = useState({});
     const [questions, setQuestions] = useState<Question[]>([]);
+<<<<<<< Updated upstream
+=======
+    const [questionsAsked, setQuestionsAsked] = useState<number>(0);
+    const [disableAsk, setDisableAsk] = useState<boolean>(false);
+>>>>>>> Stashed changes
     const [voteCounts, setVoteCounts] = useState(
         () => Object.fromEntries(questions.map((q) => [q.id, q.totalVotes])) // Initial vote counts
     );
@@ -87,6 +92,11 @@ const page = () => {
                 const data = await res.json();
                 setQuestions(data.questions);
             }
+<<<<<<< Updated upstream
+=======
+        } catch (error) {
+            console.error(error);
+>>>>>>> Stashed changes
         }
         catch (error) {
             console.error(error);
@@ -148,6 +158,7 @@ const page = () => {
                 className="navBar  fixed z-40  w-full bg-background border border-background-alt h-20 inset-0 flex items-center justify-between p-4">
                 <div className="title text-3xl text-primary">Water u Hiding ?</div>
                 <div
+<<<<<<< Updated upstream
                     onClick={() => {
                         if (questionsAsked < 2) {
                             setOpenModal(!openModal);
@@ -158,10 +169,27 @@ const page = () => {
                     className="askButton bg-primary text-2xl  rounded-full text-white w-14 h-14 flex items-center justify-center hover:bg-primary-dark hover:cursor-pointer focus:bg-primary-dark"
                 >
                     <div className="text-xl">Ask</div>
+=======
+                    className="navBar  fixed z-40  w-full bg-background border border-background-alt h-20 inset-0 flex items-center justify-between p-4">
+                    <div className="title text-3xl text-primary">Water u Hiding ?</div>
+                    <div
+                        onClick={() => {
+                            if (questionsAsked < 2 || disableAsk) {
+                                setOpenModal(!openModal);
+                            } else {
+                                toast.error("You have already asked 2 questions");
+                            }
+                        }}
+                        className="askButton bg-primary text-2xl  rounded-full text-white w-14 h-14 flex items-center justify-center hover:bg-primary-dark hover:cursor-pointer focus:bg-primary-dark"
+                    >
+                        <div className="text-xl">Ask</div>
+                    </div>
+>>>>>>> Stashed changes
                 </div>
             </div>
             <FollowLine/>
 
+<<<<<<< Updated upstream
             {questions.length != 0 ? (
                 <div className="questionsContainer mt-48 px-6  h-full  flex flex-col items-center justify-start gap-4 ">
                     {questions.map((question) => {
@@ -175,6 +203,22 @@ const page = () => {
                                 key={question.id}
                             >
                                 <div className="main text-xl">{question.question}</div>
+=======
+                {questions.length != 0 ? (
+                    <div
+                        className="questionsContainer mt-48 px-6 min-w-sm md:min-w-md h-full  flex flex-col items-center justify-start gap-4 ">
+                        {questions.map((question) => {
+                            return (
+                                <div
+                                    // initial={{ opacity: 0, y: 5 }}
+                                    // // animate={{ opacity: 1, y: 0 }}
+                                    // transition={{ duration: 0.1 }}
+                                    // whileInView={{ opacity: 1, y: 0 }}
+                                    className="relative w-full p-4 bg-background-alt rounded-lg  "
+                                    key={question.id}
+                                >
+                                    <div className="main text-xl">{question.question}</div>
+>>>>>>> Stashed changes
 
                                 <div className="bottom w-full pt-2 flex items-center justify-between">
                                     <div className="left text-neutral-600 text-md">
@@ -210,6 +254,7 @@ const page = () => {
                                         </motion.div>
                                     </div>
                                 </div>
+<<<<<<< Updated upstream
                             </div>
                         );
                     })}
@@ -224,18 +269,45 @@ const page = () => {
             {openModal == true ? <Modal setOpenModal={setOpenModal}/> : <></>}
         </div>
     </>
+=======
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="h-screen w-full flex items-center justify-center flex-col gap-6 text-5xl text-primary text-center py-40 ">
+                        <Loader/>
+                        <div className={`text-3xl`}>Fetching...</div>
+                    </div>
+                )}
+                <FollowLine/>
+                {/* <div className="questionModal "></div> */}
+                {openModal == true ? <Modal setOpenModal={setOpenModal} setQuestions={setQuestions}
+                                            questionsAsked={questionsAsked} setAskedQuestion={setQuestionsAsked} setDisableAsk={setDisableAsk}/> : <></>}
+            </div>
+        </>
+>>>>>>> Stashed changes
     );
 };
 
 const Modal = ({
+<<<<<<< Updated upstream
                    setOpenModal,
                }: {
     setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
+=======
+                   setOpenModal, setQuestions, questionsAsked, setAskedQuestion,setDisableAsk,
+               }: {
+    setOpenModal: React.Dispatch<React.SetStateAction<boolean>>,
+    setQuestions: React.Dispatch<React.SetStateAction<Question[]>>,
+    questionsAsked: number
+    setAskedQuestion: React.Dispatch<React.SetStateAction<number>>,
+    setDisableAsk: React.Dispatch<React.SetStateAction<boolean>>,
+
+>>>>>>> Stashed changes
 }) => {
     const [question, setQuestion] = useState("");
     const {user } = useAuth();
     const filter = new Filter();
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (question.length === 0) {
@@ -249,6 +321,11 @@ const Modal = ({
             return;
         }
         const token = await user?.getIdToken();
+<<<<<<< Updated upstream
+=======
+        setOpenModal(false);
+        setDisableAsk(true);
+>>>>>>> Stashed changes
         const res = await fetch("/api/createQuestion", {
             method: "POST",
             body: JSON.stringify({question: questionData}),
@@ -258,6 +335,22 @@ const Modal = ({
         });
         if (res.status === 200) {
             toast.success("Question Added...");
+<<<<<<< Updated upstream
+=======
+            const data = await res.json();
+            setQuestions((old_questions) => [
+                ...old_questions,
+                {
+                    id: data.doc?.qid,
+                    hasUpvoted: false,
+                    name: data.doc?.displayName,
+                    question: data.doc?.text,
+                    totalVotes: data.doc?.upvotes
+                }
+            ]);
+            setAskedQuestion(current => current + 1);
+            setDisableAsk(false);
+>>>>>>> Stashed changes
         }
         console.log(cleanQuestion);
         // send data to the server

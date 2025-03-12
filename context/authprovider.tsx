@@ -22,6 +22,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode })=> {
             if (!currentUser) {
                 redirect('/');
             }
+            else {
+                redirect('/forum');
+            }
             setUser(currentUser);
             setToken(currentUser).then(r => {});
         });
