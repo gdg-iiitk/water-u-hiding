@@ -26,5 +26,6 @@ const verifyUser = async (token :string | undefined) => {
 export {
     authAdmin,
     db,
+    admin,
     verifyUser
 }

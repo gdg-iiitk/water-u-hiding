@@ -17,122 +17,24 @@ import FollowLine from "@/components/FollowLine";
 import toast from "react-hot-toast";
 import Signout from "@/components/signout";
 
+interface Question {
+    id: string;
+    hasUpvoted: boolean;
+    name: string;
+    question: string;
+    totalVotes: number;
+}
+
 const questionsAsked = 1;
-const dummyData = [
-    {
-        id: 1,
-        question: "What's your favorite Holi tradition?",
-        name: "Rahul Sharma",
-        totalVotes: 42,
-        hasUpvoted: true,
-    },
-    {
-        id: 2,
-        question: "Best color combinations for Holi celebration",
-        name: "Priya Patel",
-        totalVotes: 28,
-        hasUpvoted: false,
-    },
-    {
-        id: 3,
-        question: "How do you protect your skin during Holi?",
-        name: "Amit Kumar",
-        totalVotes: 35,
-        hasUpvoted: true,
-    },
-    {
-        id: 4,
-        question: "Favorite Holi sweets and snacks?",
-        name: "Neha Gupta",
-        totalVotes: 19,
-        hasUpvoted: false,
-    },
-    {
-        id: 5,
-        question: "Tips for eco-friendly Holi celebrations?",
-        name: "Vikram Singh",
-        totalVotes: 51,
-        hasUpvoted: true,
-    },
-    {
-        id: 6,
-        question: "What are your favorite Holi songs?",
-        name: "Anjali Verma",
-        totalVotes: 23,
-        hasUpvoted: false,
-    },
-    {
-        id: 7,
-        question: "How do you celebrate Holi with family?",
-        name: "Rohit Mehta",
-        totalVotes: 37,
-        hasUpvoted: true,
-    },
-    {
-        id: 8,
-        question: "Best places to celebrate Holi in India?",
-        name: "Sneha Roy",
-        totalVotes: 45,
-        hasUpvoted: false,
-    },
-    {
-        id: 9,
-        question: "What are some unique Holi traditions?",
-        name: "Karan Singh",
-        totalVotes: 29,
-        hasUpvoted: true,
-    },
-    {
-        id: 10,
-        question: "How do you make natural colors for Holi?",
-        name: "Pooja Desai",
-        totalVotes: 33,
-        hasUpvoted: false,
-    },
-    {
-        id: 11,
-        question: "What are your favorite Holi memories?",
-        name: "Arjun Kapoor",
-        totalVotes: 40,
-        hasUpvoted: true,
-    },
-    {
-        id: 12,
-        question: "How do you clean up after Holi?",
-        name: "Meera Nair",
-        totalVotes: 22,
-        hasUpvoted: false,
-    },
-    {
-        id: 13,
-        question: "What are some fun Holi games?",
-        name: "Vikas Joshi",
-        totalVotes: 27,
-        hasUpvoted: true,
-    },
-    {
-        id: 14,
-        question: "How do you prepare for Holi?",
-        name: "Ritu Sharma",
-        totalVotes: 31,
-        hasUpvoted: false,
-    },
-    {
-        id: 15,
-        question: "What are the best Holi party ideas?",
-        name: "Aakash Gupta",
-        totalVotes: 36,
-        hasUpvoted: true,
-    },
-];
 
 const page = () => {
 
     const [openModal, setOpenModal] = useState(false);
     const [vote, setVote] = useState<any>({});
     const [pendingVote, setPendingVote] = useState({});
+    const [questions, setQuestions] = useState<Question[]>([]);
     const [voteCounts, setVoteCounts] = useState(
-        () => Object.fromEntries(dummyData.map((q) => [q.id, q.totalVotes])) // Initial vote counts
+        () => Object.fromEntries(questions.map((q) => [q.id, q.totalVotes])) // Initial vote counts
     );
     const {user, setUser} = useAuth();
     const setBatchUpdate = useCallback(
@@ -160,17 +62,40 @@ const page = () => {
         }, 2000),
         []
     );
+    const fetchData = async () => {
+        try {
+            const token =  await user?.getIdToken();
+            console.log("token", token);
+            const res = await fetch("/api/getQuestions", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            if (res.status === 200) {
+                const data = await res.json();
+                setQuestions(data.questions);
+            }
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
     useEffect(() => {
         setVote(
-            dummyData.reduce(
+            questions.reduce(
                 (acc, curr) => ({...acc, [curr.id]: curr.hasUpvoted}),
                 {}
             )
         );
         setVoteCounts(() =>
-            Object.fromEntries(dummyData.map((q) => [q.id, q.totalVotes]))
+            Object.fromEntries(questions.map((q) => [q.id, q.totalVotes]))
         );
-    }, [dummyData]);
+    }, [questions]);
+    useEffect(() => {
+
+        fetchData().then(()=>{});
+    }, [user]);
     if (user == null) {
         return (
             <div
@@ -227,9 +152,9 @@ const page = () => {
             </div>
             <FollowLine/>
 
-            {dummyData.length != 0 ? (
+            {questions.length != 0 ? (
                 <div className="questionsContainer mt-48 px-6  h-full  flex flex-col items-center justify-start gap-4 ">
-                    {dummyData.map((question) => {
+                    {questions.map((question) => {
                         return (
                             <div
                                 // initial={{ opacity: 0, y: 5 }}

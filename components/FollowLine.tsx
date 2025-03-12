@@ -11,7 +11,6 @@ const FollowLine = () => {
       const progress = (scrollTop / totalHeight) * 100;
       setHeight(progress);
     };
-
     window.addEventListener("scroll", updateHeight);
     return () => window.removeEventListener("scroll", updateHeight);
   }, []);
