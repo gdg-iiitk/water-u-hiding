@@ -13,11 +13,24 @@ export async function GET(req: Request) {
       return NextResponse.json({msg: "Invalid Credentials"}, {status: 403});
     default:
       if ("uid" in status) {
-        const userRef = db.collection("question");
-        const userSnap = await userRef.get();
-        console.log(userSnap.docs);
-        return NextResponse.json({msg: 'ok', questions: userSnap.docs.map(doc => doc.data())}, {status: 200})
-
+        const qRef= db.collection("question");
+        const qSnap= await qRef.get();
+        const userRef= db.collection("users");
+        const userSnap = await userRef.where("uid", "==", status?.uid).get();
+        const upVoted = userSnap.docs[0].data()['upVotedQuestions'];
+        console.log(upVoted);
+        return NextResponse.json({msg: 'ok', questions: qSnap.docs.map(doc =>
+          {
+            const question = doc.data();
+            console.log("question", question?.qid);
+            return {
+              hasUpvoted: upVoted.includes(question?.qid),
+              id: question?.qid,
+              name: question?.createdBy,
+              totalVotes: question?.upvotes,
+              question: question?.text,
+            }
+          })}, {status: 200})
       }
     }
 }

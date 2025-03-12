@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import {db, verifyUser} from "@/lib/firebase_admin";
-
+import {v4} from 'uuid';
 
 
 export async function POST(req: NextRequest) {
@@ -19,7 +19,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({msg: "Invalid Credentials"}, {status: 403});
       default:
         if ("uid" in status) {
-          db.collection("question").add({
+          await db.collection("question").add({
+            qid: v4(),
             text: body.question,
             createdAt: new Date().toISOString(),
             createdBy: status?.uid,
