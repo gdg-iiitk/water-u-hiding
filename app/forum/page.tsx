@@ -1,6 +1,17 @@
 "use client";
-import { ArrowBigUpDash, ThumbsUp, ThumbsUpIcon } from "lucide-react";
-import React, { useState } from "react";
+import { useAuth } from "@/context/authprovider";
+import { motion, useMotionValue, useTransform, animate } from "motion/react";
+import {
+  ArrowBigUp,
+  ArrowBigUpDash,
+  ThumbsUp,
+  ThumbsUpIcon,
+} from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
+import { debounce } from "lodash";
+import Loader from "@/components/Loader";
+import { Filter } from "bad-words";
+import { clear } from "console";
 
 const dummyData = [
   {
@@ -41,12 +52,81 @@ const dummyData = [
 ];
 
 const page = () => {
+  const { user, setUser } = useAuth();
+  if (user == null) {
+    return (
+      <div className="h-screen w-full text-5xl text-primary text-center flex items-center justify-center py-40 px-4 leading-relaxed">
+        {/* Don't try to play the fool with me Nigesh , sign in first. */}
+        <Loader />
+      </div>
+    );
+  }
   const [openModal, setOpenModal] = useState(false);
-  const toggleVote = () => {};
+  const [vote, setVote] = useState({});
+  const [pendingVote, setPendingVote] = useState({});
+  const [voteCounts, setVoteCounts] = useState(
+    () => Object.fromEntries(dummyData.map((q) => [q.id, q.totalVotes])) // Initial vote counts
+  );
+
+  const setBatchUpdate = useCallback(
+    debounce(async (updates) => {
+      try {
+        // updates.map((id) => {
+        //   if (pendingVote[id] == vote[id]) {
+        //     delete updates[id];
+        //   }
+        // });
+        //
+
+        console.log("Updating these votes ", updates);
+        setPendingVote({});
+      } catch (error) {
+        console.error(error);
+        setVoteCounts((prev) => {
+          const revertedState = { ...prev };
+          Object.keys(updates).forEach((id) => {
+            revertedState[id] += updates[id] ? -1 : 1; // Undo vote change
+          });
+          return revertedState;
+        });
+      }
+    }, 2000),
+    []
+  );
+
+  const toggleVote = (id) => {
+    console.log("started Toggle Vote");
+    setVote((prev) => {
+      const newState = { ...prev, [id]: !prev[id] };
+      return newState;
+    });
+
+    setVoteCounts((prev) => {
+      const newCounts = { ...prev, [id]: prev[id] + (vote[id] ? -1 : 1) };
+      return newCounts;
+    });
+    setPendingVote((prev) => {
+      const newPendingVote = { ...prev, [id]: !vote[id] };
+      setBatchUpdate(newPendingVote);
+      return newPendingVote;
+    });
+  };
+
+  useEffect(() => {
+    setVote(
+      dummyData.reduce(
+        (acc, curr) => ({ ...acc, [curr.id]: curr.hasUpvoted }),
+        {}
+      )
+    );
+    setVoteCounts(() =>
+      Object.fromEntries(dummyData.map((q) => [q.id, q.totalVotes]))
+    );
+  }, [dummyData]);
 
   return (
     <div className="w-screen   h-screen flex items-center justify-center overflow-x-hidden">
-      <div className="navBar  fixed w-full bg-background h-20 inset-0 flex items-center justify-between p-4">
+      <div className="navBar  fixed w-full bg-background border border-background-alt h-20 inset-0 flex items-center justify-between p-4">
         <div className="title text-3xl text-primary">Water u Hiding ?</div>
         <div
           onClick={() => {
@@ -58,7 +138,7 @@ const page = () => {
         </div>
       </div>
       {dummyData.length != 0 ? (
-        <div className="questionsContainer mt-48 px-6  h-full  flex flex-col items-center justify-start gap-4">
+        <div className="questionsContainer mt-48 px-6  h-full  flex flex-col items-center justify-start gap-4 ">
           {dummyData.map((question) => {
             return (
               <div
@@ -71,18 +151,27 @@ const page = () => {
                     {question.name}
                   </div>
                   <div className="right flex items-center justify-center gap-4 text-md">
-                    <div className="upvotes text-neutral-600  pb-0">
-                      +{question.totalVotes}
+                    <div className="upvotes text-neutral-600  pb-0 ">
+                      +{voteCounts[question.id]}
                     </div>
+                    {/* <AnimatedNumber value={voteCounts[question.id]} /> */}
                     <div
-                      className={`vote pb-1  ${
-                        question.hasUpvoted === true
+                      className={`vote pb-1 hover:cursor-pointer ${
+                        vote[question.id] === true
                           ? "text-primary-dark "
                           : "text-white"
                       }`}
-                      onClick={toggleVote}
+                      onClick={() => {
+                        toggleVote(question.id);
+                      }}
                     >
-                      <ThumbsUp size={25} className="" />
+                      <ThumbsUp
+                        size={25}
+                        className={` ${
+                          vote[question.id] === true ? "fill-current " : " "
+                        }`}
+                      />
+                      {/* <ArrowBigUpDash /> */}
                     </div>
                   </div>
                 </div>
@@ -108,9 +197,17 @@ const Modal = ({
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [question, setQuestion] = useState("");
+  const filter = new Filter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (question.length === 0) {
+      return;
+    }
+    const questionData = question.trim();
+    const cleanQuestion = filter.clean(questionData);
+    console.log(cleanQuestion);
+    // send data to the server
   };
   return (
     <div
@@ -173,4 +270,5 @@ const Modal = ({
     </div>
   );
 };
+
 export default page;
