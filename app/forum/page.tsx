@@ -17,7 +17,6 @@ import FollowLine from "@/components/FollowLine";
 import toast from "react-hot-toast";
 
 const questionsAsked = 1;
-
 const dummyData = [
   {
     id: 1,
