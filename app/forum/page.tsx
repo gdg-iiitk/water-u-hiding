@@ -187,11 +187,7 @@ const page = () => {
                                     key={question.id}
                                 >
                                     <div className="main text-xl">{question.question}</div>
-
-                                    <div className="bottom w-full pt-2 flex items-center justify-between">
-                                        <div className="left text-neutral-600 text-md">
-                                            {question.name}
-                                        </div>
+                                    <div className="bottom w-full pt-2 flex items-middle justify-end">
                                         <div className="right flex items-center justify-center gap-4 text-md">
                                             <div className="upvotes text-neutral-600  pb-0 ">
                                                 +{voteCounts[question.id]}
